@@ -1,17 +1,16 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, json
+from transliterate import translit, get_available_language_codes
 app = Flask(__name__)
 
 @app.route('/', methods=['POST'])
 def converter():
     content = request.json
-    # Convert this to transliterate ['mn']
-    print content['text']
-
-    return jsonify({"result":content})
+    converted = translit(content['text'], 'mn')
+    return converted
 
 @app.route('/', methods=['GET'])
 def returner():
     return jsonify({"message":'It works!'})
 
 if __name__ == '__main__':
-    app.run(host= '0.0.0.0',debug=True)
+    app.run(host= '0.0.0.0')
