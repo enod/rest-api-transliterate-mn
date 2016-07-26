@@ -1,16 +1,71 @@
-from flask import Flask, request, jsonify, json
+# -*- coding: utf-8 -*-
+from flask import Flask, request, jsonify
 from transliterate import translit, get_available_language_codes
+import os
+import codecs
+import re
 app = Flask(__name__)
+directory = os.getcwd()
+# with codecs.open(directory + "/mnwiktionary-latest-all-titles-in-ns0", "r", encoding='utf-8') as f:
+#     data = f.readlines()
+#     writing = [line.lower() for line in data]
+#     f.close()
+#
+# with codecs.open(directory + "/output.txt", "wb", encoding='utf-8') as f:
+#     for item in writing:
+#         f.write("%s" % item)
+with codecs.open(directory + "/output.txt", "r", encoding='utf-8') as f:
+    data = f.readlines()
+
+
+def replacer(word):
+    search_word = translit(word, 'mn')
+    print search_word
+    if u"ө" in search_word:
+        search_word_regex = search_word.replace(u"ө", ".")
+        search_word_regex_reform = "^" + search_word_regex + '$'
+        found_or_not = [item for i, item in enumerate(data) if re.search(search_word_regex_reform, item)]
+        print found_or_not
+        if found_or_not:
+            return found_or_not[0]
+        else:
+            return search_word
+    elif u"у" in search_word:
+        search_word_regex = search_word.replace(u"у", ".")
+        search_word_regex_reform = "^" + search_word_regex + '$'
+        found_or_not = [item for i, item in enumerate(data) if re.search(search_word_regex_reform, item)]
+        print found_or_not
+        if found_or_not:
+            return found_or_not[0]
+        else:
+            return search_word
+    elif u'үү' == search_word:
+        return u'уу'
+    elif u"ү" in search_word:
+        search_word_regex = search_word.replace(u"ү", ".")
+        search_word_regex_reform = "^"+search_word_regex+'$'
+        found_or_not = [item for i, item in enumerate(data) if re.search(search_word_regex_reform, item)]
+        print found_or_not
+        if found_or_not:
+            return found_or_not[0]
+        else:
+            return search_word
+    else:
+        return search_word
+
 
 @app.route('/', methods=['POST'])
 def converter():
     content = request.json
-    converted = translit(content['text'], 'mn')
-    return converted
+    result = map(lambda x: replacer(x.lower()) if u'u' in x else translit(x, 'mn'), content['text'].split())
+    result = [i.strip("\n") for i in result]
+    return " ".join(result) + "\n"
+
 
 @app.route('/', methods=['GET'])
 def returner():
-    return jsonify({"message":'It works!'})
+    return jsonify({"message": 'It works!'})
 
 if __name__ == '__main__':
-    app.run(host= '0.0.0.0')
+    app.run(host='0.0.0.0')
+
