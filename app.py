@@ -20,12 +20,11 @@ with codecs.open(directory + "/output.txt", "r", encoding='utf-8') as f:
 
 def replacer(word):
     search_word = translit(word, 'mn')
-    print search_word
     if u"ө" in search_word:
         search_word_regex = search_word.replace(u"ө", ".")
         search_word_regex_reform = "^" + search_word_regex + '$'
         found_or_not = [item for i, item in enumerate(data) if re.search(search_word_regex_reform, item)]
-        print found_or_not
+
         if found_or_not:
             return found_or_not[0]
         else:
@@ -34,7 +33,7 @@ def replacer(word):
         search_word_regex = search_word.replace(u"у", ".")
         search_word_regex_reform = "^" + search_word_regex + '$'
         found_or_not = [item for i, item in enumerate(data) if re.search(search_word_regex_reform, item)]
-        print found_or_not
+
         if found_or_not:
             return found_or_not[0]
         else:
@@ -45,7 +44,7 @@ def replacer(word):
         search_word_regex = search_word.replace(u"ү", ".")
         search_word_regex_reform = "^"+search_word_regex+'$'
         found_or_not = [item for i, item in enumerate(data) if re.search(search_word_regex_reform, item)]
-        print found_or_not
+
         if found_or_not:
             return found_or_not[0]
         else:
